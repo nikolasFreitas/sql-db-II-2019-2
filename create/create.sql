@@ -48,7 +48,7 @@ create table voo(
     id_companhia_aerea number(6) not null,
     id_portao number(6) not null,
     data_chegada date,
-    date_saida date
+    data_saida date
 );
 
 alter table portao add constraint FK_id_categoria_portao FOREIGN key(id_categoria) 

@@ -159,7 +159,7 @@ declare
         FOR fFrota in cFrota LOOP
             FOR fPortao in cPortao LOOP
                 IF isPortaoValid(fFrota.id_aeronave, fPortao.id_portao) then
-                    INSERT INTO VOO (id_voo, id_aeronave, id_companhia_aerea, id_portao,data_chegada, date_saida)
+                    INSERT INTO VOO (id_voo, id_aeronave, id_companhia_aerea, id_portao,data_chegada, data_saida)
                         values (sVoo.nextval, fFrota.id_aeronave, fFrota.id_companhia_aerea, fPortao.id_portao ,TO_DATE('2019/08/15 8:30:25', 'YYYY/MM/DD HH:MI:SS'), TO_DATE('2019/08/21 8:30:25', 'YYYY/MM/DD HH:MI:SS'));
                 else 
                     DBMS_OUTPUT.PUT_LINE('Deu FALSE');
