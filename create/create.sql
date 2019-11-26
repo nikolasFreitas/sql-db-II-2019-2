@@ -46,6 +46,7 @@ create table voo(
     id_voo number(6) primary key not null,
     id_aeronave number(6) not null,
     id_companhia_aerea number(6) not null,
+    id_portao number(6) not null,
     data_chegada date,
     date_saida date
 );
