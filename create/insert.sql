@@ -128,14 +128,18 @@ CREATE OR REPLACE FUNCTION isPortaoValid( p_id_aeronave in number, p_id_portao i
         select C.quantidade into v_portao_qtd
             from portao p
             inner join categoria c on C.ID_CATEGORIA = P.ID_CATEGORIA
-            where p_id_portao = P.ID_PORTAO;
+            where p_id_portao = P.ID_PORTAO and p.DISPONIBILIDADE != 0;
             
         select C.quantidade into v_aeronave_qtd
             from aeronave A
             inner join categoria c on C.ID_CATEGORIA = A.ID_CATEGORIA
             where p_id_aeronave = A.ID_AERONAVE;
-            
+        
         return v_aeronave_qtd <= v_portao_qtd;
+        
+        EXCEPTION
+            WHEN no_data_found THEN
+            return false;
     end;
     /
 
@@ -155,8 +159,8 @@ declare
         FOR fFrota in cFrota LOOP
             FOR fPortao in cPortao LOOP
                 IF isPortaoValid(fFrota.id_aeronave, fPortao.id_portao) then
-                    INSERT INTO VOO (id_voo, id_aeronave, id_companhia_aerea, data_chegada, date_saida)
-                        values (sVoo.nextval, fFrota.id_aeronave, fFrota.id_companhia_aerea, TO_DATE('2019/08/15 8:30:25', 'YYYY/MM/DD HH:MI:SS'), TO_DATE('2019/08/21 8:30:25', 'YYYY/MM/DD HH:MI:SS'));
+                    INSERT INTO VOO (id_voo, id_aeronave, id_companhia_aerea, id_portao,data_chegada, date_saida)
+                        values (sVoo.nextval, fFrota.id_aeronave, fFrota.id_companhia_aerea, fPortao.id_portao ,TO_DATE('2019/08/15 8:30:25', 'YYYY/MM/DD HH:MI:SS'), TO_DATE('2019/08/21 8:30:25', 'YYYY/MM/DD HH:MI:SS'));
                 else 
                     DBMS_OUTPUT.PUT_LINE('Deu FALSE');
                 end if;
