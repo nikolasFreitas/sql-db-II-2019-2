@@ -22,12 +22,17 @@ CREATE OR REPLACE PROCEDURE selecionaPortoesDisponiveis(p_data_voo in voo.data_s
     p_modelo_aeronave in AERONAVE.MODELO%type,
     v_rc out sys_refcursor) 
     IS
-        TYPE tableTemplate IS TABLE OF portao%type;
-        table_portao tableTemplate;
+        
+        TYPE portaoTableTemplate IS TABLE OF portao%ROWTYPE;
+        TYPE  companhia_aereaTableTemplate IS TABLE OF companhia_aerea%ROWTYPE;
+        
+        table_portao portaoTableTemplate;
+        table_companhia_aerea companhia_aereaTableTemplate;
         
         v_quantidade_aeronave number;
+        
         cursor cPortao(c_data_voo date, c_quantidade number) is
-        select p.* from portao p
+        select distinct p.* from portao p
             inner join categoria c on c.ID_CATEGORIA = P.ID_CATEGORIA
             inner join voo v on v.id_portao = p.id_portao
             where p.DISPONIBILIDADE != 0 
@@ -39,24 +44,17 @@ CREATE OR REPLACE PROCEDURE selecionaPortoesDisponiveis(p_data_voo in voo.data_s
         select c.quantidade into v_quantidade_aeronave from aeronave a
             inner join categoria c on c.id_categoria = A.ID_CATEGORIA
             where A.MODELO = P_MODELO_AERONAVE;
-            open cPortao(p_data_voo, v_quantidade_aeronave);
-            loop
-                fetch cPortao bulk collect into table_portao;
-                EXIT WHEN table_portao.COUNT = 0;
-            end loop;
-            close cPortao;
 
-            open v_rc for table_portao;
+        for lPortao IN cPortao(p_data_voo, v_quantidade_aeronave) loop            
+            open v_rc for select distinct ca.*, p.* from companhia_aerea ca 
+            inner join frota f on F.ID_COMPANHIA_AEREA = CA.ID_COMPANHIA_AEREA
+            inner join AERONAVE A on A.ID_AERONAVE = F.ID_AERONAVE
+            inner join categoria c on C.ID_CATEGORIA = A.ID_CATEGORIA
+            inner join portao p on P.ID_CATEGORIA = C.ID_CATEGORIA
+            where P.ID_PORTAO = lPortao.id_portao;
+        end loop;
 
-        --for lPortao IN cPortao(p_data_voo, v_quantidade_aeronave) loop            
-          --      open v_rc for select distinct ca.*, p.* from companhia_aerea ca 
-          --      inner join frota f on F.ID_COMPANHIA_AEREA = CA.ID_COMPANHIA_AEREA
-           --     inner join AERONAVE A on A.ID_AERONAVE = F.ID_AERONAVE
-           --     inner join categoria c on C.ID_CATEGORIA = A.ID_CATEGORIA
-             --   inner join portao p on P.ID_CATEGORIA = C.ID_CATEGORIA
-               -- where P.ID_PORTAO = lPortao.id_portao;
-        --end loop;    
-         DBMS_SQL.RETURN_RESULT(v_rc);
+         --DBMS_SQL.RETURN_RESULT(table_companhia_aerea);
     end;
 /
 
@@ -77,6 +75,6 @@ exec pegaPortoesDisponiveis(TO_DATE('2019/08/16 8:30:25', 'YYYY/MM/DD HH:MI:SS')
 print cursorzin;
 
 var otro refcursor;
-EXECUTE selecionaPortoesDisponiveis(TO_DATE('2019/08/16 8:30:25', 'YYYY/MM/DD HH:MI:SS'), 'King air', :otro);
+EXECUTE selecionaPortoesDisponiveis(TO_DATE('2019/08/16 8:30:25', 'YYYY/MM/DD HH:MI:SS'), 'airbus a319', :otro);
 print otro;
 
