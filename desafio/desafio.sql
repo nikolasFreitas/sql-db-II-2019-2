@@ -52,7 +52,6 @@ CREATE OR REPLACE PACKAGE BODY vooHandler IS
             v_template_row.disponibilidade := lAvailable.disponibilidade;
             v_template_row.id_companhia_aerea := lAvailable.id_companhia_aerea;
             v_template_row.nome := lAvailable.nome;
-            DBMS_OUTPUT.PUT_LINE(v_template_row.nome);
             pipe ROW(v_template_row);
             END loop;
         end loop;
