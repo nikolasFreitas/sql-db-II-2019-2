@@ -43,6 +43,5 @@ create or replace procedure checkFilghtAvaliable(p_data_voo in voo.data_saida%ty
 
 var otro refcursor;
 EXECUTE checkFilghtAvaliable(TO_DATE('2019/09/16 8:30:25', 'YYYY/MM/DD HH:MI:SS'), :otro);
--- EXECUTE checkFilghtAvaliable(1, :otro);
 print otro;
 show errors;
