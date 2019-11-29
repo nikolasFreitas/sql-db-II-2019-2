@@ -1,5 +1,5 @@
 set serveroutput on;
--- Verifiacar quais portões estão disponíveis
+-- Verifiacar quais portï¿½es estï¿½o disponï¿½veis
 CREATE or replace procedure pegaPortoesDisponiveis(p_data_voo in voo.data_saida%type, 
     p_quantidade in number, 
     p_cos out SYS_REFCURSOR)
@@ -16,16 +16,38 @@ CREATE or replace procedure pegaPortoesDisponiveis(p_data_voo in voo.data_saida%
     end;
 /
 
--- Verificar quais companhia aéreas podem fazer o vôo numa data especificae com modelo de avião específico
--- e quais portões estão disponíveis
-CREATE OR REPLACE PROCEDURE selecionaPortoesDisponiveis(p_data_voo in voo.data_saida%type, 
+CREATE OR REPLACE PACKAGE vooHandler AUTHID DEFINER AS
+    TYPE portaoTableTemplate is record (
+        id_portao portao.id_portao%type,
+        id_categoria portao.id_categoria%type,
+        disponibilidade portao.disponibilidade%type,
+        id_companhia_aerea companhia_aerea.id_companhia_aerea%type,
+        nome companhia_aerea.nome%type
+    );
+    
+    TYPE  companhia_aereaTableTemplate IS TABLE OF portaoTableTemplate;
+    
+    FUNCTION pipeCompanhiaEportao(x NUMBER) RETURN companhia_aereaTableTemplate PIPELINED;
+END vooHandler;
+/
+
+CREATE OR REPLACE PACKAGE BODY vooHandler IS
+    FUNCTION getComapnhiasEPortoesDisponiveisParaVoo(p_data_voo in voo.data_saida%type, 
+    p_modelo_aeronave in AERONAVE.MODELO%type,
+    v_rc out sys_refcursor)
+    RETURN companhia_aereaTableTemplate pipelined
+    IS
+    BEGIN
+        select * from portao;
+    END;
+END vooHandler;
+/
+-- Verificar quais companhia aï¿½reas podem fazer o vï¿½o numa data especificae com modelo de aviï¿½o especï¿½fico
+-- e quais portï¿½es estï¿½o disponï¿½veis
+CREATE OR REPLACE PROCEDURE getComapnhiasEPortoesDisponiveisParaVoo(p_data_voo in voo.data_saida%type, 
     p_modelo_aeronave in AERONAVE.MODELO%type,
     v_rc out sys_refcursor) 
-    IS
-        
-        TYPE portaoTableTemplate IS TABLE OF portao%ROWTYPE;
-        TYPE  companhia_aereaTableTemplate IS TABLE OF companhia_aerea%ROWTYPE;
-        
+    IS  
         table_portao portaoTableTemplate;
         table_companhia_aerea companhia_aereaTableTemplate;
         
@@ -54,7 +76,6 @@ CREATE OR REPLACE PROCEDURE selecionaPortoesDisponiveis(p_data_voo in voo.data_s
             where P.ID_PORTAO = lPortao.id_portao;
         end loop;
 
-         --DBMS_SQL.RETURN_RESULT(table_companhia_aerea);
     end;
 /
 
