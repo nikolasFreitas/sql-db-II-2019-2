@@ -16,32 +16,7 @@ CREATE or replace procedure pegaPortoesDisponiveis(p_data_voo in voo.data_saida%
     end;
 /
 
-CREATE OR REPLACE PACKAGE vooHandler AUTHID DEFINER AS
-    TYPE portaoTableTemplate is record (
-        id_portao portao.id_portao%type,
-        id_categoria portao.id_categoria%type,
-        disponibilidade portao.disponibilidade%type,
-        id_companhia_aerea companhia_aerea.id_companhia_aerea%type,
-        nome companhia_aerea.nome%type
-    );
-    
-    TYPE  companhia_aereaTableTemplate IS TABLE OF portaoTableTemplate;
-    
-    FUNCTION pipeCompanhiaEportao(x NUMBER) RETURN companhia_aereaTableTemplate PIPELINED;
-END vooHandler;
-/
 
-CREATE OR REPLACE PACKAGE BODY vooHandler IS
-    FUNCTION getComapnhiasEPortoesDisponiveisParaVoo(p_data_voo in voo.data_saida%type, 
-    p_modelo_aeronave in AERONAVE.MODELO%type,
-    v_rc out sys_refcursor)
-    RETURN companhia_aereaTableTemplate pipelined
-    IS
-    BEGIN
-        select * from portao;
-    END;
-END vooHandler;
-/
 -- Verificar quais companhia a�reas podem fazer o v�o numa data especificae com modelo de avi�o espec�fico
 -- e quais port�es est�o dispon�veis
 CREATE OR REPLACE PROCEDURE getComapnhiasEPortoesDisponiveisParaVoo(p_data_voo in voo.data_saida%type, 
@@ -79,15 +54,39 @@ CREATE OR REPLACE PROCEDURE getComapnhiasEPortoesDisponiveisParaVoo(p_data_voo i
     end;
 /
 
-CREATE OR REPLACE PROCEDURE selecionaPortoesDisponiveis(
-    p_data_voo in voo.data_saida%type, 
-    p_modelo_aeronave in AERONAVE.MODELO%type)      
+create or replace procedure get_all_fligths(c_cursor out sys_refcursor)
     is
-        v_rc SYS_REFCURSOR;
-        cursorzin refcursor;
     begin
-        pegaPortoesDisponiveis(p_data_voo, 30, v_rc);        
-        
+        open c_cursor for
+            SELECT distinct * FROM VOO;       
+    end;
+/
+
+
+CREATE or replace function get_company_id_by_frota_id(p_id_frota in frota.id_callsign%type ) return companhia_aerea.id_companhia_aerea%type
+    is
+        v_id_companhia_aerea companhia_aerea.id_companhia_aerea%type;
+
+        cursor c_company(c_id_frota frota.id_callsign%type) is
+            select ca.id_companhia_aerea from companhia_aerea ca
+                inner join frota f on f.id_companhia_aerea = ca.id_companhia_aerea
+                where f.id_companhia_aerea = c_id_frota;
+    begin
+        for c_company in c_company(p_id_frota) loop
+            v_id_companhia_aerea := c_company.id_companhia_aerea;
+        end loop;
+        return v_id_companhia_aerea;
+    end;
+/
+
+CREATE OR REPLACE PROCEDURE get_company_by_voo(p_id_voo in voo.id_voo%type, c_cursor out sys_refcursor)
+    is
+        v_id_companhia_aerea companhia_aerea.id_companhia_aerea%type;
+    begin
+        open c_cursor for 
+            select ca.nome, V.DATA_CHEGADA, V.DATA_SAIDA, v.ID_COMPANHIA_AEREA from companhia_aerea ca
+                inner join voo v on v.id_companhia_aerea = ca.id_companhia_aerea
+                where v.id_voo = p_id_voo;
     end;
 /
 
@@ -96,6 +95,6 @@ exec pegaPortoesDisponiveis(TO_DATE('2019/08/16 8:30:25', 'YYYY/MM/DD HH:MI:SS')
 print cursorzin;
 
 var otro refcursor;
-EXECUTE selecionaPortoesDisponiveis(TO_DATE('2019/08/16 8:30:25', 'YYYY/MM/DD HH:MI:SS'), 'airbus a319', :otro);
+EXECUTE get_company_by_voo(2, :otro);
 print otro;
 
