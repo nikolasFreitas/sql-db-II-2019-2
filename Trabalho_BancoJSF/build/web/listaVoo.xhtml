@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+        <title>Facelet Title</title>
+        <meta charset="UTF-8"/>
+        <!-- A tag abaixo permite usar responsividade -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <!-- Usar a última versão compilada e "minified" ou "minificada" de CSS -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
+
+        <!-- Tema opcional -->
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css"/>
+    </h:head>
+    <h:body>
+        <div>
+            <h:form>
+                <h:commandButton action="#{vooBean.getAllAvailableFlights()}" value="Listar os vôos disponíveis"/>
+                <h:commandButton action="#{vooBean.getAllFlights()}" value="Listar todos vôos"/>                
+            </h:form>
+        </div>
+
+        <h:form>
+            <div class="container-fluid">
+                <h:dataTable value="#{vooBean.vooList}" var="voo"
+                             styleClass="table">
+                     <h:column>
+                        <f:facet name="header">Numero voo</f:facet>
+                            #{voo.idVoo}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Data chegada</f:facet>
+                            #{voo.data_chegada}
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">Data saida</f:facet>
+                            #{voo.data_saida}
+                    </h:column>
+                    <h:column>
+                        <h:commandButton value="Detalhes" class = "btn btn-success" action="#{voo.excluir(cliente)}"/>
+                    </h:column>
+                    
+                </h:dataTable>
+            </div>
+        </h:form>
+    </h:body>
+</html>
+

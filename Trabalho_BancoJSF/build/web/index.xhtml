@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Index</title>
+        <!-- A tag abaixo permite usar responsividade -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <!-- Usar a última versão compilada e "minified" ou "minificada" de CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"></link>
+
+    </h:head>
+    <h:body>
+        <!--idVoo=1, idAeronave=2, idCompanhiaAerea=1, idPortao=2, data_chegada=2019-08-15 08:30:25, data_saida=2019-08-15 08:30:25-->
+        <div class="container">
+            <div class="row align-items-center justify-contents-center">
+                <div class="col">
+                    <h1>Veja nosso histórico de voo</h1>
+                    <h:form> 
+
+                        <h:commandButton value="Histórico" class = "btn btn-success" action="#{vooBean.redirectLista()}"/>
+
+                    </h:form> 
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    </h:body>
+</html>
+
