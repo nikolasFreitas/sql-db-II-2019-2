@@ -9,27 +9,35 @@ CREATE OR REPLACE PACKAGE vooHandler AUTHID DEFINER AS
     );
 
     TYPE VOO_TABLE_TEMPLATE IS TABLE OF voo_record;
-    FUNCTION getFlightById(p_data_voo in voo.data_saida%type) RETURN VOO_TABLE_TEMPLATE pipelined;
+    FUNCTION getFlightByDate(p_data_voo in voo.data_saida%type) RETURN VOO_TABLE_TEMPLATE pipelined;
 END vooHandler;
 /
 
 CREATE OR REPLACE PACKAGE BODY vooHandler IS
-    FUNCTION getFlightById(p_data_voo in voo.data_saida%type) RETURN VOO_TABLE_TEMPLATE pipelined
-    is
-        rec voo_record;        
-            
+    FUNCTION getFlightByDate(p_data_voo in voo.data_saida%type) RETURN VOO_TABLE_TEMPLATE pipelined
+    is      
+        v_voo voo_record;
+        cursor cVoo is
+            SELECT * FROM VOO where data_saida > p_data_voo;
     begin
-        SELECT * INTO rec FROM VOO where data_saida > p_data_voo;
-        PIPE ROW (rec);
+        for pVoo in cVoo loop
+        v_voo.id_voo := pVoo.id_voo;
+        v_voo.id_aeronave := pVoo.id_aeronave;
+        v_voo.id_companhia_aerea := pVoo.id_companhia_aerea;
+        v_voo.id_portao := pVoo.id_portao;
+        v_voo.data_chegada := pVoo.data_chegada;
+        v_voo.data_saida := pVoo.data_saida;
+        PIPE ROW (v_voo);
+        end loop;
         RETURN;
-    end getFlightById;
+    end getFlightByDate;
 END vooHandler;
 /
 
 create or replace procedure checkFilghtAvaliable(p_data_voo in voo.data_saida%type, v_rc out sys_refcursor)
     is
     begin
-        OPEN v_rc FOR SELECT * FROM TABLE (vooHandler.getFlightById(p_data_voo));
+        OPEN v_rc FOR SELECT * FROM TABLE (vooHandler.getFlightByDate(p_data_voo));
     end;
 /
 
