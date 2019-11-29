@@ -11,13 +11,11 @@ CREATE OR REPLACE PROCEDURE insertAeronaveNaFrota (p_modelo_aeronave in varchar2
             from companhia_aerea where nome = p_nome_companhia_aerea;
             
         IF v_aeronave_id = null then
-            raise_application_error(-20001,'Aeronave não enconrtada SQLCODE='||
+            raise_application_error(-20001,'Aeronave nï¿½o enconrtada SQLCODE='||
                 SQLCODE||' SQLERRM= ' ||SQLERRM );
             IF v_companhia_aerea = null then
-                raise_application_error(-20001,'Companhia aerea não enconrtada SQLCODE='||
+                raise_application_error(-20001,'Companhia aerea nï¿½o enconrtada SQLCODE='||
                     SQLCODE||' SQLERRM= ' ||SQLERRM );
-                --INSERT INTO frota (id_callsign, id_aeronave, id_companhia_aerea) 
-                  --  VALUES (sFrota.nextval, v_aeronave_id, v_companhia_aerea);
             end if;
         end if;
             INSERT INTO frota (id_callsign, id_aeronave, id_companhia_aerea) 
