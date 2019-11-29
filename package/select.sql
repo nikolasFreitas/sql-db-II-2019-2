@@ -18,7 +18,7 @@ CREATE OR REPLACE PACKAGE BODY vooHandler IS
     is      
         v_voo voo_record;
         cursor cVoo is
-            SELECT * FROM VOO where data_saida > p_data_voo;
+            SELECT * FROM VOO where data_saida > p_data_voo and DATA_CHEGADA > P_DATA_VOO;
     begin
         for pVoo in cVoo loop
         v_voo.id_voo := pVoo.id_voo;
@@ -42,7 +42,7 @@ create or replace procedure checkFilghtAvaliable(p_data_voo in voo.data_saida%ty
 /
 
 var otro refcursor;
-EXECUTE checkFilghtAvaliable(TO_DATE('2019/08/16 8:30:25', 'YYYY/MM/DD HH:MI:SS'), :otro);
+EXECUTE checkFilghtAvaliable(TO_DATE('2019/09/16 8:30:25', 'YYYY/MM/DD HH:MI:SS'), :otro);
 -- EXECUTE checkFilghtAvaliable(1, :otro);
 print otro;
 show errors;
